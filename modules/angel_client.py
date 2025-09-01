@@ -1,12 +1,14 @@
 import streamlit as st
 from SmartApi import SmartConnect
 import pyotp
+import os
 
 def init_angel():
+    """Initialize Angel One SmartAPI connection from environment variables"""
     try:
-        obj = SmartConnect(api_key=st.secrets["ANGEL_API_KEY"])
-        token = pyotp.TOTP(st.secrets["ANGEL_TOTP"]).now()
-        obj.generateSession(st.secrets["ANGEL_CLIENT_ID"], st.secrets["ANGEL_PASSWORD"], token)
+        obj = SmartConnect(api_key=os.environ["ANGEL_API_KEY"])
+        token = pyotp.TOTP(os.environ["ANGEL_TOTP"]).now()
+        obj.generateSession(os.environ["ANGEL_CLIENT_ID"], os.environ["ANGEL_PASSWORD"], token)
         return obj
     except Exception as e:
         st.error(f"❌ Angel init failed: {e}")

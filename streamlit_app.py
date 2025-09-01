@@ -1,13 +1,14 @@
 import streamlit as st
+import os
 from modules.angel_client import init_angel, get_option_quote, place_order
 from modules.strategy import generate_signal
 from modules.trade_manager import can_trade, manage_trade
 from modules.utils import get_atm_strike
 
 try:
-    MASTER_PASSWORD = st.secrets["MASTER_PASSWORD"]
-except:
-    st.error("❌ Missing MASTER_PASSWORD in secrets")
+    MASTER_PASSWORD = os.environ["MASTER_PASSWORD"]
+except KeyError:
+    st.error("❌ Missing MASTER_PASSWORD in environment variables")
     st.stop()
 
 if "authenticated" not in st.session_state:
