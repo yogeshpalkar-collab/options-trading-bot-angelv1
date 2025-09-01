@@ -3,6 +3,7 @@ from SmartApi import SmartConnect
 import pyotp
 import os
 import pandas as pd
+import requests
 
 def init_angel():
     try:
@@ -14,11 +15,12 @@ def init_angel():
         st.error(f"❌ Angel init failed: {e}")
         return None
 
-def fetch_instruments(obj):
+def fetch_instruments(obj=None):
     try:
-        # Use Angel API's master contract download
-        file_path = obj.download_master_contract("NFO")
-        instruments = pd.read_csv(file_path)
+        url = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
+        data = requests.get(url).json()
+        instruments = pd.DataFrame(data)
+        instruments = instruments[instruments["exch_seg"] == "NFO"]  # keep only NFO contracts
         return instruments
     except Exception as e:
         st.error(f"❌ Failed to fetch instruments: {e}")
