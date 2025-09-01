@@ -2,9 +2,9 @@ import streamlit as st
 from SmartApi import SmartConnect
 import pyotp
 import os
+import pandas as pd
 
 def init_angel():
-    """Initialize Angel One SmartAPI connection from environment variables"""
     try:
         obj = SmartConnect(api_key=os.environ["ANGEL_API_KEY"])
         token = pyotp.TOTP(os.environ["ANGEL_TOTP"]).now()
@@ -13,6 +13,14 @@ def init_angel():
     except Exception as e:
         st.error(f"❌ Angel init failed: {e}")
         return None
+
+def fetch_instruments(obj):
+    try:
+        instruments = obj.getInstruments("NFO")
+        return pd.DataFrame(instruments)
+    except Exception as e:
+        st.error(f"❌ Failed to fetch instruments: {e}")
+        return pd.DataFrame()
 
 def get_option_quote(obj, exchange, tradingsymbol, symboltoken):
     try:
