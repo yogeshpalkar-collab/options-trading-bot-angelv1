@@ -16,8 +16,10 @@ def init_angel():
 
 def fetch_instruments(obj):
     try:
-        instruments = obj.getInstruments("NFO")
-        return pd.DataFrame(instruments)
+        # Use Angel API's master contract download
+        file_path = obj.download_master_contract("NFO")
+        instruments = pd.read_csv(file_path)
+        return instruments
     except Exception as e:
         st.error(f"❌ Failed to fetch instruments: {e}")
         return pd.DataFrame()
