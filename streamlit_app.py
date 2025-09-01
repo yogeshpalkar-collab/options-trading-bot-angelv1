@@ -96,8 +96,28 @@ st.metric("ATM", atm)
 expiry = st.selectbox("Select Expiry", get_next_tuesdays())
 
 def get_token(symbol):
-    row = instruments[instruments["tradingsymbol"] == symbol]
-    return str(row.iloc[0]["token"]) if not row.empty else None
+    if instruments.empty:
+        return None
+
+    # Normalize column names
+    cols = [c.lower() for c in instruments.columns]
+
+    # Find tradingsymbol column
+    if "tradingsymbol" in cols:
+        col = instruments.columns[cols.index("tradingsymbol")]
+    elif "symbol" in cols:
+        col = instruments.columns[cols.index("symbol")]
+    else:
+        st.error("❌ Instruments missing tradingsymbol/symbol column")
+        return None
+
+    row = instruments[instruments[col] == symbol]
+    if row.empty:
+        return None
+
+    # Find token column
+    token_col = "token" if "token" in instruments.columns else instruments.columns[-1]
+    return str(row.iloc[0][token_col])
 
 # OI Bias calculation ATM ±2 strikes
 strikes = [atm - 100, atm - 50, atm, atm + 50, atm + 100]
