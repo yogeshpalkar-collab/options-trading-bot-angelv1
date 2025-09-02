@@ -1,5 +1,5 @@
 import streamlit as st
-from smartapi import SmartConnect
+from SmartApi import SmartConnect
 import pyotp
 import os
 import pandas as pd
