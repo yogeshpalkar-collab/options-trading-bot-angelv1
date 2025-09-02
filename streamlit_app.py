@@ -20,6 +20,8 @@ obj = init_angel()
 if not obj:
     st.error("❌ Angel login failed. Please check API key / Client ID / Password / TOTP secret.")
 if not obj:
+    st.error("❌ Angel login failed. Please check API key / Client ID / Password / TOTP secret.")
+if not obj:
 
 # ---------------- INSTRUMENTS ----------------
 instruments = fetch_instruments()
