@@ -1,4 +1,13 @@
 import streamlit as st
+
+# ---------------- SESSION STATE INIT ----------------
+if "trades" not in st.session_state:
+    st.session_state["trades"] = []
+if "trade_count" not in st.session_state:
+    st.session_state["trade_count"] = 0
+if "open_positions" not in st.session_state:
+    st.session_state["open_positions"] = []
+
 import os
 from datetime import date, timedelta
 import pandas as pd
