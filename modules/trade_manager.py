@@ -1,4 +1,3 @@
-import streamlit as st
 import numpy as np
 from datetime import datetime
 
@@ -13,14 +12,15 @@ def can_trade(strike, trade_count, open_positions):
     return True, ""
 
 def calculate_atr(prices, period=10):
+    if not prices:
+        return 10
     if len(prices) < period:
-        return np.std(prices)  # fallback
+        return max(10, np.std(prices))
     diffs = [abs(prices[i] - prices[i-1]) for i in range(1, len(prices))]
-    return np.mean(diffs[-period:])
+    return max(10, np.mean(diffs[-period:]) * 1.5)
 
 def initial_stoploss(entry_price, side, prices):
-    atr = calculate_atr(prices)
-    sl_points = max(10, 1.5 * atr)  # ATR-based with 10 floor
+    sl_points = calculate_atr(prices)
     if side == "GO CALL":
         return entry_price - sl_points
     else:

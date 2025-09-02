@@ -12,10 +12,10 @@ def init_angel():
         obj.generateSession(os.environ["ANGEL_CLIENT_ID"], os.environ["ANGEL_PASSWORD"], token)
         return obj
     except Exception as e:
-        st.error(f"❌ Angel init failed: {e}")
+        st.error(f"❌ Angel login failed: {e}")
         return None
 
-def fetch_instruments(obj=None):
+def fetch_instruments():
     try:
         url = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
         data = requests.get(url).json()

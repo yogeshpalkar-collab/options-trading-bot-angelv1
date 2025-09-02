@@ -1,4 +1,9 @@
 import streamlit as st
+import pandas as pd
+from modules.angel_client import init_angel, fetch_instruments, get_option_quote, place_order
+from modules.strategy import generate_signal
+from modules.trade_manager import can_trade, manage_trade, initial_stoploss, calculate_atr
+from modules.utils import get_atm_strike
 
 # ---------------- SESSION STATE INIT ----------------
 if "trades" not in st.session_state:
@@ -8,21 +13,32 @@ if "trade_count" not in st.session_state:
 if "open_positions" not in st.session_state:
     st.session_state["open_positions"] = []
 
-import os
-from datetime import date, timedelta
-import pandas as pd
-from modules.angel_client import init_angel, fetch_instruments, get_option_quote, place_order
-from modules.strategy import generate_signal
-from modules.trade_manager import can_trade, manage_trade
-from modules.utils import get_atm_strike
+st.title("📊 Options Trading Bot (Angel One)")
 
-# Dummy placeholders for initialization to keep example concise
-spot = 22600
+# ---------------- LOGIN ----------------
+obj = init_angel()
+if not obj:
+    st.stop()
 
+# ---------------- INSTRUMENTS ----------------
+instruments = fetch_instruments()
+if instruments.empty:
+    st.error("⚠️ Failed to fetch instruments. Cannot continue.")
+    st.stop()
+
+expiries = sorted(instruments["expiry"].unique()) if "expiry" in instruments else []
+expiry = st.selectbox("Select Expiry", expiries) if expiries else None
+
+spot = 22600  # TODO: replace with live spot fetch
+atm = get_atm_strike(spot)
+
+st.markdown(f"**Spot:** {spot} | **ATM Strike:** {atm} | **Expiry:** {expiry if expiry else 'N/A'}")
+
+# ---------------- STRATEGY SIGNAL ----------------
+signal = "NO-GO"  # placeholder, actual calc would use indicators
+st.markdown(f"### 🎯 Signal: {signal}")
 
 # ---------------- TRADE PANEL ----------------
-import pandas as pd
-
 st.subheader("📑 Trade Log")
 
 if st.session_state["trades"]:
@@ -30,8 +46,6 @@ if st.session_state["trades"]:
     for trade in st.session_state["trades"]:
         ltp = spot
         status, msg = manage_trade(trade["entry"], ltp, trade["sl"])
-
-        # Update SL dynamically if trailing is applied
         if "trailing SL set at" in msg:
             try:
                 new_sl = float(msg.split("at")[-1].strip())
