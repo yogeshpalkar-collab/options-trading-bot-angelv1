@@ -1,2 +1,9 @@
-streamlit
+streamlit>=1.35.0
 pandas
+numpy
+matplotlib
+requests
+smartapi-python
+pyotp
+logzero
+websocket-client
