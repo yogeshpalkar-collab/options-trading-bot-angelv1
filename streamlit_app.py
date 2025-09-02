@@ -18,13 +18,13 @@ st.title("📊 Options Trading Bot (Angel One)")
 # ---------------- LOGIN ----------------
 obj = init_angel()
 if not obj:
-    st.stop()
+    st.error("❌ Angel login failed. Please check API key / Client ID / Password / TOTP secret.")
+if not obj:
 
 # ---------------- INSTRUMENTS ----------------
 instruments = fetch_instruments()
 if instruments.empty:
     st.error("⚠️ Failed to fetch instruments. Cannot continue.")
-    st.stop()
 
 expiries = sorted(instruments["expiry"].unique()) if "expiry" in instruments else []
 expiry = st.selectbox("Select Expiry", expiries) if expiries else None

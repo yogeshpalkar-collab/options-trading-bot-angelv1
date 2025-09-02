@@ -9,10 +9,16 @@ def init_angel():
     try:
         obj = SmartConnect(api_key=os.environ["ANGEL_API_KEY"])
         token = pyotp.TOTP(os.environ["ANGEL_TOTP"]).now()
-        obj.generateSession(os.environ["ANGEL_CLIENT_ID"], os.environ["ANGEL_PASSWORD"], token)
-        return obj
+        resp = obj.generateSession(os.environ["ANGEL_CLIENT_ID"], os.environ["ANGEL_PASSWORD"], token)
+
+        if resp.get("status") is True:
+            return obj
+        else:
+            reason = resp.get("message", "Unknown error")
+            st.error(f"❌ Angel login failed: {reason}")
+            return None
     except Exception as e:
-        st.error(f"❌ Angel login failed: {e}")
+        st.error(f"❌ Angel login exception: {e}")
         return None
 
 def fetch_instruments():
